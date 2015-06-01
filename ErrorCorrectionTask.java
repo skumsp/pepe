@@ -33,6 +33,8 @@ public class ErrorCorrectionTask implements Callable
     }
     public Object call()
     {
+//        if (rFor.name.equalsIgnoreCase(">40410/1 reference=one_1_1 position=1..306 errors=292%A"))
+//                System.out.println();
         ArrayList<Integer> errors = new ArrayList();
         ArrayList<Integer> errorsForJoint = new ArrayList();
         ArrayList<Integer> errorsRevJoint = new ArrayList();
@@ -71,6 +73,7 @@ public class ErrorCorrectionTask implements Callable
         StringBuilder sbFor = new StringBuilder(rFor.nucl);
         StringBuilder sbRev = new StringBuilder(rRev.nucl);
         
+        int nErrCorr = 0;
         for (int i = 1; i < errors.size() -1; i++)
         {
             try
@@ -120,6 +123,8 @@ public class ErrorCorrectionTask implements Callable
                 if (avKcountRev > avKcountFor)
                     sbFor.setCharAt(errors.get(i), sbRev.charAt(errors.get(i)));
                 
+                nErrCorr++;
+                
                 
                 
 /*                FileWriter fw = new FileWriter("read_corr" + i + ".fas");
@@ -135,6 +140,6 @@ public class ErrorCorrectionTask implements Callable
         }
         rFor.nucl = new String(sbFor);
         rRev.nucl = new String(sbRev);
-        return 0;
+        return nErrCorr;
     }
 }

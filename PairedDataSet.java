@@ -8,6 +8,9 @@ package pepe;
 import ErrorCorrection.DataSet;
 import ErrorCorrection.Read;
 import ErrorCorrection.RevCompGenTask;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,6 +39,53 @@ public class PairedDataSet {
     {
         forward = ds1;
         reverse = ds2;
+    }
+    public PairedDataSet(String addr,String type) throws FileNotFoundException, IOException
+    {
+        BufferedReader br = new BufferedReader(new FileReader(addr));
+        forward = new DataSet();
+        reverse = new DataSet();
+        if (type.equalsIgnoreCase("grinder"))
+        {
+            int i = 0;
+            int j = 0;
+            String name = br.readLine();
+            while (name != null)
+            {
+                if (i==0)
+                    j++;
+
+
+                String s = br.readLine();
+                String seq = "";
+                while ((s != null) && (!s.startsWith(">")))
+                {
+                    seq+=s;
+                    s = br.readLine();
+                }
+                if (i==0)
+                    System.out.println("Reading read " + j + " forward");
+                else
+                    System.out.println("Reading read " + j + " reverse");
+            
+                Read r = new Read(seq,name);
+                if (r.name.contains("complement"))
+                    r.RevComp();
+                if (i==0)
+                {
+                    forward.reads.add(r);
+                    i=1;
+                }
+                else
+                {
+                    reverse.reads.add(r);
+                    i=0;
+                }
+                name = s;  
+
+            }
+        }
+        br.close();
     }
     public void removeBadReads(double perc)
     {
@@ -171,13 +221,22 @@ public class PairedDataSet {
             }
             i++;
         }
+        seq = null;
         
+    }
+    public void delJointDS()
+    {
+        for (Read r : joint.reads)
+            r.kmers = null;
+        joint.reads = null;
+        joint = null;
+        System.gc();
     }
     int getNPairedReads()
     {
         return forward.reads.size();
     }
-    void correctErrors(int k) throws InterruptedException, ExecutionException
+    int correctErrors(int k) throws InterruptedException, ExecutionException
     {
         joint.setK(k);
         joint.calculateKMersAndKCounts();
@@ -198,14 +257,17 @@ public class PairedDataSet {
         }
         
         int i = 0;
+        int nErrCorr = 0;
         for(Future future:futuresList) 
         {
-            Object taskResult = future.get();
+            int ncorr = (Integer) future.get();
+            nErrCorr+=ncorr;
             System.out.println("Error correction: read "+i + "/" + this.getNPairedReads());
             i++;
         }
         
         System.out.println();
+        return nErrCorr;
     }
     void printReadsOneFile(String addr) throws IOException
     {
