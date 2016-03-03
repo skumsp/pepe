@@ -29,9 +29,9 @@ public class Pepe {
         double percBad = 0.5;
         int k = 25;
         int minlen = 160;
-        int maxIter = 25;
+        int maxIter = 1;
         
-        String folder_name = "test";
+        String folder_name = "BCC1";
         File folder = new File(folder_name);
                 
         File[] list_files = folder.listFiles();
@@ -73,7 +73,7 @@ public class Pepe {
         
         FileWriter fw = new FileWriter("stats.txt");
                 
-        for (int i = 0; i < forwFiles.size(); i++)
+    for (int i = 0; i < forwFiles.size(); i++)
         {
             String dset_file1 = forwFiles.get(i);
             DataSet ds1 = new DataSet(dset_file1,'c');
@@ -83,12 +83,11 @@ public class Pepe {
             long startTime = System.currentTimeMillis();
             
             PairedDataSet ds = new PairedDataSet(ds1,ds2);
-            fw.write(list_files[i].getName() + " ");
+            fw.write(dset_file1 + " ");
             fw.write(ds.getNPairedReads() + " ");
             
             ds.delAllNs();
 //            ds.printReadsOneFile(dset_file1 + "_together.fas");
-            ds.printReadsOneFile(dset_file1 + "_together.fas");
             ds.comparePairedEndPrintStat(dset_file1 + "_stats.txt", gapop, gapext);
             ds.delShortReads(minlen);
             DataSet perf = ds.getPerfectReads();
@@ -113,6 +112,7 @@ public class Pepe {
             
 //            ds.comparePairedEndPrintStat(dset_file1 + "_stats_corrected.txt", gapop, gapext);            
             ds.printReadsOneFile(dset_file1 + "_corrected_together.fas"); 
+            ds.forward.PrintReads(dset_file1 + "_corrected_forward.fas");
             fw.write("\n");
             
         }

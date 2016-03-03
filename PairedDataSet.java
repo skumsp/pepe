@@ -242,8 +242,8 @@ public class PairedDataSet {
         joint.calculateKMersAndKCounts();
         
         List< Future > futuresList = new ArrayList< Future >();
-        int nrOfProcessors = Runtime.getRuntime().availableProcessors();
-//        int nrOfProcessors = 1;
+//        int nrOfProcessors = Runtime.getRuntime().availableProcessors();
+        int nrOfProcessors = 32;
         ExecutorService eservice = Executors.newFixedThreadPool(nrOfProcessors);
                          
         for (int i = 0; i < this.getNPairedReads(); i++)
@@ -296,8 +296,11 @@ public class PairedDataSet {
     {
         DataSet ds = new DataSet();
         for (int i = 0; i < this.getNPairedReads(); i++)
+        {
+            System.out.println("Getting perfect: " + i + "//" + this.getNPairedReads());
             if (this.forward.reads.get(i).nucl.equalsIgnoreCase(this.reverse.reads.get(i).nucl))
                 ds.reads.add(this.forward.reads.get(i));
+        }
         return ds;
     }
     void delAllNs()
@@ -306,6 +309,7 @@ public class PairedDataSet {
         ArrayList<Read> toDelRev = new ArrayList();
         for (int i = 0; i < this.getNPairedReads(); i++)
         {
+            System.out.println("Removing Ns: read " + i + "//" + this.getNPairedReads());
             int nN = 0;
             for (int j = 0; j < this.forward.reads.get(i).nucl.length(); j++)
                 if (this.forward.reads.get(i).nucl.charAt(j) == 'N')

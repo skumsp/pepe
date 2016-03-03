@@ -6,36 +6,35 @@
 package pepe;
 
 import ErrorCorrection.DataSet;
-import ErrorCorrection.ReadFreqComparator;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.ArrayList;
+import org.biojava.nbio.core.exceptions.CompoundNotFoundException;
 
 /**
  *
- * @author pavel
+ * @author kki8
  */
 public class test {
-    public static void main(String[] args) throws IOException
+    public static void main(String[] args) throws IOException, CompoundNotFoundException
     {
-        
-        String folder_name = "test_res";
+        String folder_name = "test2";
+        String refAddr = "refs.fas";
+        DataSet refs = new DataSet(refAddr,'c');
         File folder = new File(folder_name);
                 
         File[] list_files = folder.listFiles();
-        int thr = 1;
-
-                
+        
         for (int i = 0; i < list_files.length; i++)
         {
             String dset_file = list_files[i].getPath();
             DataSet ds = new DataSet(dset_file);
-            DataSet ds1 = new DataSet(dset_file,'c');
-            ReadFreqComparator rfc = new ReadFreqComparator(); 
-            Collections.sort(ds.reads, rfc);
-            ds.PrintUniqueReadsThr(dset_file+ "_unique.fas",thr);
+            ds.clipToRef(refs, 15, 6);
+            ds.findHaplotypes("KEC","Frequency");
+            ds.PrintHaplotypes(dset_file + "_hapl_clipped.fas");
+            
         }
+        
     }
     
 }
