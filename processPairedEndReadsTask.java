@@ -49,6 +49,7 @@ public class processPairedEndReadsTask implements Callable
    {
         int nSub = 0;
         int nIndel = 0;
+        ArrayList<Integer> errors = new ArrayList();
         DNASequence target = new DNASequence(rForw.nucl, AmbiguityDNACompoundSet.getDNACompoundSet());
         DNASequence query = new DNASequence(rRev.nucl, AmbiguityDNACompoundSet.getDNACompoundSet());
  
@@ -66,15 +67,7 @@ public class processPairedEndReadsTask implements Callable
             psa =
 				Alignments.getPairwiseAlignment(query, target,
 						Alignments.PairwiseSequenceAlignerType.LOCAL, gapP, matrix);
-        }
-        catch(Exception e)      
-        {
-            ArrayList<Integer> errors = new ArrayList();
-            errors.add(-1);
-            return errors;
-        }
-        
-
+       
 //        System.out.println(psa.getAlignedSequence(1));
 //        System.out.println(psa.getAlignedSequence(2));
         
@@ -101,10 +94,15 @@ public class processPairedEndReadsTask implements Callable
             }
             rForw.nucl = seq1;
             rRev.nucl = seq2;
-            ArrayList<Integer> errors = new ArrayList();
             errors.add(nIndel);
             errors.add(nSub);
             errors.add(end-st+1);
+        }
+        catch(Exception e)      
+        {
+            errors.add(-1);
             return errors;
+        }
+        return errors;
    }
 }

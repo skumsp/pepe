@@ -158,6 +158,7 @@ public class PairedDataSet {
         reverse.reads.removeAll(badRev);
         FileWriter fw = new FileWriter(addr);
         for (int i = 0; i < allErr.size(); i++)
+        // indel subs totalerr length
             fw.write((i+1) + " " + forward.reads.get(i).name + " " + allErr.get(i).get(0) + " " + allErr.get(i).get(1) + " " + 
                     (allErr.get(i).get(0)+allErr.get(i).get(1)) + " " + allErr.get(i).get(2) + "\n");
         fw.close();
@@ -280,15 +281,18 @@ public class PairedDataSet {
         fw.close();
     }
     void delShortReads(int cutoff)
-    {
+   {
         ArrayList<Read> toDelFor = new ArrayList();
         ArrayList<Read> toDelRev = new ArrayList();
         for (int i = 0; i < this.getNPairedReads(); i++)
+        {
+            System.out.println("Del short: read " + i + "//" + this.getNPairedReads());
             if ((this.forward.reads.get(i).getLength() < cutoff) || (this.reverse.reads.get(i).getLength() < cutoff))
             {
                 toDelFor.add(this.forward.reads.get(i));
                 toDelRev.add(this.reverse.reads.get(i));
             }
+        }
         this.forward.reads.removeAll(toDelFor);
         this.reverse.reads.removeAll(toDelRev);
     }

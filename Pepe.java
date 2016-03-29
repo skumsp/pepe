@@ -6,6 +6,7 @@
 package pepe;
 
 import ErrorCorrection.DataSet;
+import ErrorCorrection.DataSetXL;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -28,10 +29,10 @@ public class Pepe {
         int gapext =6;
         double percBad = 0.5;
         int k = 25;
-        int minlen = 160;
-        int maxIter = 1;
+        int minlen = 220;
+        int maxIter = 3;
         
-        String folder_name = "BCC1";
+        String folder_name = "Illumina_Raw_demultiplexed_tag_MID_fas";
         File folder = new File(folder_name);
                 
         File[] list_files = folder.listFiles();
@@ -76,43 +77,43 @@ public class Pepe {
     for (int i = 0; i < forwFiles.size(); i++)
         {
             String dset_file1 = forwFiles.get(i);
-            DataSet ds1 = new DataSet(dset_file1,'c');
+            DataSetXL ds1 = new DataSetXL(dset_file1,'c');
             String dset_file2 = revFiles.get(i);
-            DataSet ds2 = new DataSet(dset_file2,'c');
+            DataSetXL ds2 = new DataSetXL(dset_file2,'c');
             
             long startTime = System.currentTimeMillis();
             
-            PairedDataSet ds = new PairedDataSet(ds1,ds2);
+            PairedDataSetXL pds = new PairedDataSetXL(ds1,ds2);
             fw.write(dset_file1 + " ");
-            fw.write(ds.getNPairedReads() + " ");
+            fw.write(pds.getNPairedReads() + " ");
             
-            ds.delAllNs();
+            pds.delAllNs();
 //            ds.printReadsOneFile(dset_file1 + "_together.fas");
-            ds.comparePairedEndPrintStat(dset_file1 + "_stats.txt", gapop, gapext);
-            ds.delShortReads(minlen);
-            DataSet perf = ds.getPerfectReads();
+            pds.comparePairedEndPrintStat(dset_file1 + "_stats.txt", gapop, gapext);
+            pds.delShortReads(minlen);
+            DataSet perf = pds.getPerfectReads();
             fw.write(perf.reads.size()+ " ");
 //            ds.printReadsOneFile(dset_file1 + "_clipped_together.fas");
-            ds.createJointDS();
+            pds.createJointDS();
             //            ds.joint.PrintReadsStat(folder_name);            
-            int nErrCorr = ds.correctErrors(k);
+            int nErrCorr = pds.correctErrors(k);
             int nIter = 1;
             while ((nErrCorr > 0) && (nIter <= maxIter))
             {
-                ds.delJointDS();
-                ds.createJointDS();
-                nErrCorr = ds.correctErrors(k);
+                pds.delJointDS();
+                pds.createJointDS();
+                nErrCorr = pds.correctErrors(k);
                 nIter++;
             }
-            perf = ds.getPerfectReads();
-            perf.PrintUniqueReadsNoFreqTag(dset_file1 + "_corrected.fas");
+            perf = pds.getPerfectReads();
+            perf.PrintUniqueReadsNoFreqTag(dset_file1 + "_perfect.fas");
             fw.write(perf.reads.size()+ " ");
             long tm = System.currentTimeMillis() - startTime;
             fw.write("" + ((double) tm) / 1000);
             
-//            ds.comparePairedEndPrintStat(dset_file1 + "_stats_corrected.txt", gapop, gapext);            
-            ds.printReadsOneFile(dset_file1 + "_corrected_together.fas"); 
-            ds.forward.PrintReads(dset_file1 + "_corrected_forward.fas");
+            pds.comparePairedEndPrintStat(dset_file1 + "_stats_corrected.txt", gapop, gapext);            
+            pds.printReadsOneFile(dset_file1 + "_corrected_together.fas"); 
+            pds.forward.PrintReads(dset_file1 + "_corrected_forward.fas");
             fw.write("\n");
             
         }

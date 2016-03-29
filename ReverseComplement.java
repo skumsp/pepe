@@ -28,7 +28,7 @@ public class ReverseComplement {
         int minlen = 160;
         int maxIter = 25;
         
-        String folder_name = "BCC";
+        String folder_name = "Illumina_Raw_demultiplexed_tag_MID_fas";
         File folder = new File(folder_name);
                 
         File[] list_files = folder.listFiles();
@@ -46,7 +46,7 @@ public class ReverseComplement {
                 String dset_file1 = list_files[i].getName();
                 if (dset_file1.contains("R1"))
                 {
-                    StringTokenizer st = new StringTokenizer(dset_file1,"_");
+                    StringTokenizer st = new StringTokenizer(dset_file1,"_.");
                     String ds_name = "";
                     String s = st.nextToken();
                     while (!s.equalsIgnoreCase("R1"))
